@@ -49,3 +49,18 @@ Rscript inst/scripts/reproduce_one_case.R
 It generates one 5% high-background simulation, fits joint mMIRAGE and a
 single-trait MIRAGE comparator, runs burden tests, and writes summary files
 under `reproducibility_output/`.
+
+## High-background variant demo
+
+A smaller standalone demo is included to explain why high-background variants
+can favor mMIRAGE/MIRAGE over an mTADA-style case-count aggregation:
+
+```bash
+Rscript inst/scripts/background_vs_nonbackground_demo.R
+```
+
+The script reads the included simulation files under `inst/extdata/`, compares
+causal, high-background noncausal, and ordinary null genes, and writes a compact
+table plus plot under `background_demo_output/`. The mTADA-like score is an
+illustrative case-count aggregation for this diagnostic demo, not a full
+reimplementation of the mTADA package.
