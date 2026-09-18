@@ -92,6 +92,12 @@ mtada_like_gene_score <- function(d, n_case) {
   do.call(rbind, gene_rows)
 }
 
+rename_mtada_score <- function(d, suffix) {
+  names(d)[names(d) == "mtada_like_score"] <- paste0("mtada_like_score_", suffix)
+  names(d)[names(d) == "mtada_like_min_p"] <- paste0("mtada_like_min_p_", suffix)
+  d
+}
+
 case_control_gene_p <- function(d, n_case, n_control) {
   agg <- aggregate(cbind(No.case, No.contr) ~ Gene, d, sum)
   pvals <- vapply(seq_len(nrow(agg)), function(i) {
@@ -116,14 +122,19 @@ count_summary <- aggregate(
   sum
 )
 rate_summary <- aggregate(cbind(mutation_rate, count_rate) ~ Gene, trait1, sum)
+mtada_trait1 <- rename_mtada_score(mtada_like_gene_score(trait1, n_case1), "trait1")
+mtada_trait2 <- rename_mtada_score(mtada_like_gene_score(trait2, n_case2), "trait2")
 gene_summary <- Reduce(function(x, y) merge(x, y, by = "Gene"), list(
   truth,
   count_summary,
   rate_summary,
-  mtada_like_gene_score(trait1, n_case1),
+  mtada_trait1,
+  mtada_trait2,
   case_control_gene_p(trait1, n_case1, n_control1),
   fit$posterior[, c("Gene", "PP_trait1", "PP_trait2", "PP_pleiotropy")]
 ))
+gene_summary$mtada_like_score_pleiotropy <- gene_summary$mtada_like_score_trait1 *
+  gene_summary$mtada_like_score_trait2
 
 gene_summary$background_gene <- gene_summary$high_background > 0
 gene_summary$gene_group <- ifelse(
@@ -133,19 +144,53 @@ gene_summary$gene_group <- ifelse(
 )
 gene_summary$case_control_ratio <- (gene_summary$No.case + 0.5) /
   (gene_summary$No.contr + 0.5)
-gene_summary <- gene_summary[order(-gene_summary$mtada_like_score), ]
+gene_summary <- gene_summary[order(-gene_summary$mtada_like_score_trait1), ]
 
 group_summary <- aggregate(
   cbind(
     No.case, No.contr, high_background, mutation_rate, count_rate,
-    mtada_like_score, burden_case_control_p, PP_trait1, case_control_ratio
+    mtada_like_score_trait1, burden_case_control_p, PP_trait1, case_control_ratio
   ) ~ gene_group,
   gene_summary,
   mean
 )
 
+auc_summary <- rbind(
+  data.frame(
+    method = "MIRAGE",
+    target = "trait1",
+    auc = binary_auc(gene_summary$PP_trait1, gene_summary$trait1_risk)
+  ),
+  data.frame(
+    method = "mTADA_like",
+    target = "trait1",
+    auc = binary_auc(gene_summary$mtada_like_score_trait1, gene_summary$trait1_risk)
+  ),
+  data.frame(
+    method = "MIRAGE",
+    target = "trait2",
+    auc = binary_auc(gene_summary$PP_trait2, gene_summary$trait2_risk)
+  ),
+  data.frame(
+    method = "mTADA_like",
+    target = "trait2",
+    auc = binary_auc(gene_summary$mtada_like_score_trait2, gene_summary$trait2_risk)
+  ),
+  data.frame(
+    method = "MIRAGE",
+    target = "pleiotropy",
+    auc = binary_auc(gene_summary$PP_pleiotropy, gene_summary$pleiotropic)
+  ),
+  data.frame(
+    method = "mTADA_like",
+    target = "pleiotropy",
+    auc = binary_auc(gene_summary$mtada_like_score_pleiotropy, gene_summary$pleiotropic)
+  )
+)
+
 write.csv(gene_summary, file.path(outdir, "background_demo_gene_scores.csv"), row.names = FALSE)
 write.csv(group_summary, file.path(outdir, "background_demo_group_summary.csv"), row.names = FALSE)
+write.csv(auc_summary, file.path(outdir, "background_demo_auc.csv"), row.names = FALSE)
 
 png(file.path(outdir, "background_demo_score_comparison.png"),
     width = 1500, height = 1100, res = 180)
@@ -155,7 +200,7 @@ cols <- c(
   ordinary_nonrisk = "#7f7f7f"
 )
 plot(
-  gene_summary$mtada_like_score,
+  gene_summary$mtada_like_score_trait1,
   gene_summary$PP_trait1,
   pch = 19,
   col = cols[gene_summary$gene_group],
@@ -180,15 +225,18 @@ cat("  ", normalizePath(outdir), "\n\n", sep = "")
 cat("Group-level averages for Trait 1 genes:\n")
 print(group_summary)
 
+cat("\nAUC comparison:\n")
+print(auc_summary)
+
 cat("\nTop genes by mTADA-like aggregation:\n")
 print(head(gene_summary[, c(
   "Gene", "gene_group", "state", "No.case", "No.contr", "high_background",
-  "true_z", "mtada_like_score", "burden_case_control_p", "PP_trait1"
+  "true_z", "mtada_like_score_trait1", "burden_case_control_p", "PP_trait1"
 )], 15))
 
 cat("\nTop genes by MIRAGE posterior:\n")
 mirage_rank <- gene_summary[order(-gene_summary$PP_trait1), ]
 print(head(mirage_rank[, c(
   "Gene", "gene_group", "state", "No.case", "No.contr", "high_background",
-  "true_z", "mtada_like_score", "burden_case_control_p", "PP_trait1"
+  "true_z", "mtada_like_score_trait1", "burden_case_control_p", "PP_trait1"
 )], 15))

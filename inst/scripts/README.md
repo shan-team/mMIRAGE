@@ -64,4 +64,5 @@ of the mTADA package. It intentionally uses case counts and the reported
 mutation rate only, so high-background noncausal genes can look artificially
 strong after aggregation. The MIRAGE/mMIRAGE fit uses both case and control
 counts, so genes with similarly elevated counts in cases and controls are
-down-weighted. Output files are written to `background_demo_output/`.
+down-weighted. Output files are written to `background_demo_output/`, including
+`background_demo_auc.csv`.

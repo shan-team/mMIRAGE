@@ -69,7 +69,7 @@ inst/extdata/background_demo_meta.csv
 ```
 
 It compares trait-1 risk genes, non-risk genes with high-background variants,
-and ordinary non-risk genes, then writes a compact table plus plot under
-`background_demo_output/`. The mTADA-like score is an illustrative case-count
-aggregation for this diagnostic demo, not a full reimplementation of the mTADA
-package.
+and ordinary non-risk genes, then writes compact tables, an AUC comparison, and
+a plot under `background_demo_output/`. The mTADA-like score is an illustrative
+case-count aggregation for this diagnostic demo, not a full reimplementation of
+the mTADA package.
