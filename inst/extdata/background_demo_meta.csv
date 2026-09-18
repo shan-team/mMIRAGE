@@ -1,0 +1,2 @@
+"source","seed","replicate","n_genes","variants_per_gene","n_case1","n_control1","n_case2","n_control2","simulation_design","background_prob","background_multiplier","pi00","pi10","pi01","pi11"
+"Mirage_t explorations/mirage_single_style_vs_mtada/run_exploration.R",20260813,1,500,15,3000,3000,3000,3000,"control_informative",0.05,5,0.94,0.04,0.01,0.01

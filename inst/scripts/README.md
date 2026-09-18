@@ -44,14 +44,20 @@ The script uses the fixed example data in:
 ```text
 inst/extdata/background_demo_variants.csv
 inst/extdata/background_demo_truth.csv
+inst/extdata/background_demo_meta.csv
 ```
 
-It compares three gene classes:
+These files are not newly generated toy data. They are the first replicate from
+the original control-informative simulation used in the manuscript exploration:
+500 genes, 15 variants per gene per trait, 3,000 cases and 3,000 controls per
+trait, 5% high-background variants, and a 5-fold background-rate multiplier.
 
-1. `causal_risk`: true disease-risk genes with case enrichment.
-2. `high_background_noncausal`: non-risk genes whose variants have elevated
-   background counts in both cases and controls.
-3. `ordinary_null`: non-risk genes without elevated background counts.
+The script compares three gene classes:
+
+1. `trait1_risk`: true Trait 1 risk genes with case enrichment.
+2. `nonrisk_with_high_background`: non-risk genes containing high-background
+   variants, whose counts are elevated in both cases and controls.
+3. `ordinary_nonrisk`: non-risk genes without high-background variants.
 
 The mTADA-like score is an illustrative aggregation, not a full reimplementation
 of the mTADA package. It intentionally uses case counts and the reported

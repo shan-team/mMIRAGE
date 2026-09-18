@@ -52,15 +52,24 @@ under `reproducibility_output/`.
 
 ## High-background variant demo
 
-A smaller standalone demo is included to explain why high-background variants
-can favor mMIRAGE/MIRAGE over an mTADA-style case-count aggregation:
+A standalone demo is included to explain why high-background variants can favor
+mMIRAGE/MIRAGE over an mTADA-style case-count aggregation:
 
 ```bash
 Rscript inst/scripts/background_vs_nonbackground_demo.R
 ```
 
-The script reads the included simulation files under `inst/extdata/`, compares
-causal, high-background noncausal, and ordinary null genes, and writes a compact
-table plus plot under `background_demo_output/`. The mTADA-like score is an
-illustrative case-count aggregation for this diagnostic demo, not a full
-reimplementation of the mTADA package.
+The script reads a fixed replicate from the original 5% high-background
+simulation used in the manuscript exploration:
+
+```text
+inst/extdata/background_demo_variants.csv
+inst/extdata/background_demo_truth.csv
+inst/extdata/background_demo_meta.csv
+```
+
+It compares trait-1 risk genes, non-risk genes with high-background variants,
+and ordinary non-risk genes, then writes a compact table plus plot under
+`background_demo_output/`. The mTADA-like score is an illustrative case-count
+aggregation for this diagnostic demo, not a full reimplementation of the mTADA
+package.
