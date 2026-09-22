@@ -66,3 +66,25 @@ strong after aggregation. The MIRAGE/mMIRAGE fit uses both case and control
 counts, so genes with similarly elevated counts in cases and controls are
 down-weighted. Output files are written to `background_demo_output/`, including
 `background_demo_auc.csv`.
+
+## Gene-level diagnostic
+
+To inspect individual risk and non-risk genes and see what drives the
+mTADA-like and MIRAGE/mMIRAGE scores, run:
+
+```bash
+Rscript inst/scripts/gene_level_mtada_mirage_diagnostic.R
+```
+
+This script uses the same fixed simulation replicate as the high-background
+demo. It writes:
+
+- `gene_diagnostic_output/all_gene_scores.csv`
+- `gene_diagnostic_output/selected_gene_summary.csv`
+- `gene_diagnostic_output/selected_category_evidence.csv`
+- `gene_diagnostic_output/selected_variant_evidence.csv`
+
+The selected examples are meant to make the pattern visible: mTADA-like
+aggregation is driven by case counts relative to mutation rate, while
+MIRAGE/mMIRAGE can downweight high-background non-risk genes when the control
+counts are also elevated.

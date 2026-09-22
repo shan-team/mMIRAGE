@@ -13,4 +13,5 @@ analysis/site_libs
 # Reproducibility script outputs
 reproducibility_output/
 background_demo_output/
+gene_diagnostic_output/
 *.tar.gz
